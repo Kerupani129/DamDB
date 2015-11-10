@@ -48,18 +48,17 @@ test.bat を実行すると、bin フォルダ内に jar ファイルが作成�
   * The Apache License version 2.0 <https://github.com/xerial/sqlite-jdbc/blob/master/LICENSE>
   * Copyright (c) 2009 Taro L. Saito
 * Jsoup <https://jsoup.org/>
-  * The MIT License http://jsoup.org/license
-  * Copyright (c) 2009 - 2013 Jonathan Hedley (jonathan@hedley.net)
+  * The MIT License <http://jsoup.org/license>
+  * Copyright (c) 2009 - 2013 Jonathan Hedley (<jonathan@hedley.net>)
 
 ## ライセンス & コピーライト
 Copyright (c) 2015 Kerupani129 and licensed under The MIT License.
 
 ## バージョン履歴
 * 2015/07/12 ver.0.2
-  * おそらく readme.txt の誤植を修正。その他にもちょくちょく修正
+  * おそらく readme\_old.txt の誤植を修正。その他にもちょくちょく修正
   * 日付情報を SQLite に合わせた形式にしていなかったので修正
   * 2 回目以降の履歴保存時に、最終更新日時までの分だけダウンロードするようにした
   * 以前のバージョンで保存したデータベースファイルを自動修正してそのままデータを引き継げるようにした
 * 2015/06/29 ver.0.1
   * とりあえず保存できるようになったので試しに公開 (^^;
-
