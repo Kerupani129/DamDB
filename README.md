@@ -48,8 +48,8 @@ test.bat を実行すると、bin フォルダ内に jar ファイルが作成�
   * The Apache License version 2.0 <https://github.com/xerial/sqlite-jdbc/blob/master/LICENSE>
   * Copyright (c) 2009 Taro L. Saito
 * Jsoup <https://jsoup.org/>
-  * The MIT License http://jsoup.org/license
-  * Copyright (c) 2009 - 2013 Jonathan Hedley (jonathan@hedley.net)
+  * The MIT License <http://jsoup.org/license>
+  * Copyright (c) 2009 - 2013 Jonathan Hedley (<jonathan@hedley.net>)
 
 ## ライセンス & コピーライト
 Copyright (c) 2015 Kerupani129 and licensed under The MIT License.
@@ -62,4 +62,3 @@ Copyright (c) 2015 Kerupani129 and licensed under The MIT License.
   * 以前のバージョンで保存したデータベースファイルを自動修正してそのままデータを引き継げるようにした
 * 2015/06/29 ver.0.1
   * とりあえず保存できるようになったので試しに公開 (^^;
-
