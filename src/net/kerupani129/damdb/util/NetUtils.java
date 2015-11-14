@@ -1,4 +1,4 @@
-package net.kerupani129.damdb;
+package net.kerupani129.damdb.util;
 
 import java.util.*;
 import java.util.regex.*;

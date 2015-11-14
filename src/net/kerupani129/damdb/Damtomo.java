@@ -9,6 +9,8 @@ import java.nio.file.*;
 import org.jsoup.*;
 import org.jsoup.nodes.*;
 
+import net.kerupani129.damdb.util.*;
+
 // 
 // Damtomo クラス
 // 
@@ -29,6 +31,8 @@ public class Damtomo {
 	private String damtomoId;
 	private String cdmCardNo;
 	private String name;
+	/* 採点情報 */
+	private final MarkingDx markingDx;
 	
 	// 
 	// コンストラクタ
@@ -44,11 +48,16 @@ public class Damtomo {
 		this.con = DriverManager.getConnection("jdbc:sqlite:" + Paths.get(this.dbDir, this.dbName + ".db"));
 		this.stmt = this.con.createStatement();
 		
-		// データベース のバージョンチェック・修正
-		this.fitVersion();
-		
 		// データベース から ユーザー情報 を取得
 		this.getProfile();
+		
+		// データベース のバージョンチェック・修正
+		if (this.ready()) {
+			this.fitVersion();
+		}
+		
+		// 採点情報用のインスタンス初期化
+		this.markingDx = new MarkingDx(this);
 		
 	}
 	
@@ -79,33 +88,6 @@ public class Damtomo {
 	// 
 	private void getProfile() throws SQLException {
 		
-		/*
-		ResultSet rs;
-		
-		// テーブル 存在チェック
-		rs = this.stmt.executeQuery(
-			"SELECT count(*) FROM sqlite_master WHERE type == 'table' and name == 'Profile';"
-		);
-		rs.next();
-		if (0 == rs.getInt("count(*)")) return;
-		
-		// データベース から ユーザー情報 取得
-		rs = this.stmt.executeQuery(
-			"SELECT value FROM Profile WHERE key == 'damtomoId';"
-		);
-		if (rs.next()) this.damtomoId = rs.getString("value");
-		
-		rs = this.stmt.executeQuery(
-			"SELECT value FROM Profile WHERE key == 'cdmCardNo';"
-		);
-		if (rs.next()) this.cdmCardNo = rs.getString("value");
-		
-		rs = this.stmt.executeQuery(
-			"SELECT value FROM Profile WHERE key == 'name';"
-		);
-		if (rs.next()) this.name = rs.getString("value");
-		*/
-		
 		// テーブル 存在チェック
 		if (!SqlUtils.tableExists(this.stmt, "Profile")) return;
 		
@@ -127,23 +109,8 @@ public class Damtomo {
 	// 
 	public void fitVersion() throws SQLException {
 		
-		String version;
-		
-		// データベース メタ情報 チェック・保存
-		if (SqlUtils.tableExists(this.stmt, "Meta")) {
-			version = this.stmt.executeQuery(
-				"SELECT (SELECT value FROM Meta WHERE key == 'version') AS value;"
-			).getString("value");
-		} else {
-			this.stmt.executeUpdate(
-				"CREATE TABLE Meta(key text primary key, value);\n" +
-				"REPLACE INTO Meta VALUES('version', '" + Meta.version.replace("'", "''") + "');"
-			);
-			version = "0.1";
-		}
-		
 		// バージョン変換
-		FitVersion.fit(this, version);
+		FitVersion.fit(this);
 		
 	}
 	
@@ -225,7 +192,7 @@ public class Damtomo {
 	// MarkingDx オブジェクト 取得
 	// 
 	public MarkingDx getMarkingDx() {
-		return new MarkingDx(this);
+		return markingDx;
 	}
 	
 }

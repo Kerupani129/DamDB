@@ -33,10 +33,6 @@ public class Main {
 				} else {
 					damtomo.setProfile(args[0]);
 				}
-				/*
-				damtomo.setProfile("http://www.clubdam.com/app/damtomo/member/info/Profile.do?damtomoId=MzA4MzY0NjQ");
-				damtomo.setName("Kerupani129");
-				*/
 			}
 			
 			// プロフィール情報 表示
@@ -64,12 +60,6 @@ public class Main {
 		} catch (Exception e) {
 			throw new IllegalStateException("エラー: 予期せぬエラーが発生しました: ", e);
 		}
-		
-		/*
-		System.out.println(MonospacedStringUtils.width("testてｓｔ"));
-		System.out.println("[" + MonospacedStringUtils.substring("testてｓｔ", 5) + "]");
-		System.out.println("[" + MonospacedStringUtils.substring("testてｓｔ", 5, 5) + "]");
-		*/
 		
 	}
 	

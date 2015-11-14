@@ -73,7 +73,14 @@ public class MarkingDx {
 			"	lastMilliPoint integer,\n" +
 			"	\n" +
 			"	date text primary key\n" +
-			");"
+			");\n" +
+			"CREATE TABLE IF NOT EXISTS Song(requestNo text primary key, artist text, contents text);\n" +
+			"CREATE TABLE IF NOT EXISTS Tag(requestNo text, tag text, unique(requestNo, tag));\n" +
+			"CREATE TRIGGER IF NOT EXISTS TriggerSongOnMarkingDx AFTER INSERT ON MarkingDx\n" +
+			"	BEGIN\n" +
+			"		REPLACE INTO Song VALUES(NEW.requestNo, NEW.artist, NEW.contents);\n" +
+			"	END\n" +
+			";"
 		);
 		
 		// 表示用に 最終更新日時 取得
