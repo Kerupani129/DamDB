@@ -2,3 +2,4 @@
 /bin/*
 !/bin/damdb.bat
 /db/*
+/sql/test_*.sql
