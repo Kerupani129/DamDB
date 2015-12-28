@@ -4,25 +4,25 @@ import java.util.*;
 import java.util.regex.*;
 
 // 
-// NetUtils ƒNƒ‰ƒX
+// NetUtils ã‚¯ãƒ©ã‚¹
 // 
 public class NetUtils {
 	
 	// 
-	// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	// 
 	private NetUtils() {}
 	
 	// 
-	// URL ‚Ì ƒNƒGƒŠ•¶š—ñ ‚ğ Map<String, String> ‚É•ÏŠ·
+	// URL ã® ã‚¯ã‚¨ãƒªæ–‡å­—åˆ— ã‚’ Map<String, String> ã«å¤‰æ›
 	// 
 	public static Map<String, String> getQueryMap(String query) {
 		
-		// "&" ‹æØ‚è
+		// "&" åŒºåˆ‡ã‚Š
 		Map<String, String> map = new HashMap<String, String>();
 		String[] params = query.split(Pattern.quote("&"));
 		
-		// "=" ‹æØ‚è
+		// "=" åŒºåˆ‡ã‚Š
 		for (String param: params) {
 			String[] splitted = param.split(Pattern.quote("="));
 			

@@ -1,35 +1,36 @@
 package net.kerupani129.damdb;
 
-import java.io.*;
-import java.util.*;
-import java.sql.*;
+import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-import org.jsoup.*;
-import org.jsoup.nodes.*;
-import org.jsoup.select.*;
-import org.jsoup.parser.*;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.parser.Parser;
+import org.jsoup.select.Elements;
 
-// 
-// MarkingDx ƒNƒ‰ƒX
-// 
+//
+// MarkingDx ã‚¯ãƒ©ã‚¹
+//
 public class MarkingDx {
-	
-	// •Ï”
+
+	// å¤‰æ•°
 	private Damtomo damtomo;
-	
-	// 
-	// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-	// 
+
+	//
+	// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	//
 	public MarkingDx(Damtomo damtomo) {
 		this.damtomo = damtomo;
 	}
-	
-	// 
-	// Ì“_î•ñ‚ğXV‚·‚é
-	// 
+
+	//
+	// æ¡ç‚¹æƒ…å ±ã‚’æ›´æ–°ã™ã‚‹
+	//
 	public void update() throws IOException, SQLException {
-		
-		// ƒf[ƒ^ƒx[ƒX ‚Éƒe[ƒuƒ‹‚ª‚È‚¯‚ê‚Îì¬
+
+		// ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ ã«ãƒ†ãƒ¼ãƒ–ãƒ«ãŒãªã‘ã‚Œã°ä½œæˆ
 		this.damtomo.getStatement().executeUpdate(
 			"CREATE TABLE IF NOT EXISTS LastUpdateDate(name text primary key, date text);\n" +
 			"INSERT OR IGNORE INTO LastUpdateDate VALUES('MarkingDx', '0000-00-00 00:00:00');\n" +
@@ -82,45 +83,45 @@ public class MarkingDx {
 			"	END\n" +
 			";"
 		);
-		
-		// •\¦—p‚É ÅIXV“ú æ“¾
+
+		// è¡¨ç¤ºç”¨ã« æœ€çµ‚æ›´æ–°æ—¥æ™‚ å–å¾—
 		ResultSet rs = this.damtomo.getStatement().executeQuery(
-			"SELECT date FROM LastUpdateDate WHERE name == 'MarkingDx';" /* –{“–‚Í‚¿‚á‚ñ‚ÆƒtƒH[ƒ}ƒbƒg‚µ‚½‚Ù‚¤‚ª—Ç‚¢‚©‚à */
+			"SELECT date FROM LastUpdateDate WHERE name == 'MarkingDx';" /* æœ¬å½“ã¯ã¡ã‚ƒã‚“ã¨ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã—ãŸã»ã†ãŒè‰¯ã„ã‹ã‚‚ */
 		);
 		rs.next();
 		String date_old = rs.getString("date");
-		
-		// XML ‚ğ 1 ƒy[ƒW‚²‚Æ‚Éæ“¾
+
+		// XML ã‚’ 1 ãƒšãƒ¼ã‚¸ã”ã¨ã«å–å¾—
 		pageLoop: for (int i = 1, totalPage = 1; i <= totalPage; i++) {
-			
-			// XML ‚ğ 1 ƒy[ƒW æ“¾
+
+			// XML ã‚’ 1 ãƒšãƒ¼ã‚¸ å–å¾—
 			Document doc = Jsoup.connect("http://www.clubdam.com/app/damtomo/membership/MarkingDxListXML.do")
 				.data("cdmCardNo", this.damtomo.getCdmCardNo())
 				.data("enc", "utf-8")
 				.data("pageNo", String.valueOf(i))
 				.data("UTCserial", String.valueOf(new java.util.Date().getTime()))
 				.timeout(Damtomo.timeout).parser(Parser.xmlParser()).get();
-			
-			// XML ƒ`ƒFƒbƒN
+
+			// XML ãƒã‚§ãƒƒã‚¯
 			if (!"0000".equals(doc.select("document > result > statusCode").last().ownText())) {
-				throw new IllegalStateException("ƒGƒ‰[: XML ‚ªˆÙí‚Å‚·: " + doc.select("document > result > message").last().ownText() + ": ");
+				throw new IllegalStateException("ã‚¨ãƒ©ãƒ¼: XML ãŒç•°å¸¸ã§ã™: " + doc.select("document > result > message").last().ownText() + ": ");
 			}
-			
-			// ƒy[ƒW” ƒ`ƒFƒbƒN
+
+			// ãƒšãƒ¼ã‚¸æ•° ãƒã‚§ãƒƒã‚¯
 			totalPage = Integer.parseInt(doc.select("document > data > totalPage").last().ownText());
-			
-			// ƒy[ƒW“à‚ÌÌ“_Œ‹‰Êˆ—
+
+			// ãƒšãƒ¼ã‚¸å†…ã®æ¡ç‚¹çµæœå‡¦ç†
 			Elements markings = doc.select("document > list > data > marking");
-			
+
 			for (Element marking: markings) {
-				
+
 				if (!this.parseElement(marking)) break pageLoop;
-				
+
 			}
-			
+
 		}
-		
-		// –³–‚ÉXV‚ªI‚í‚Á‚½‚ç ÅIXV“ú •Û‘¶
+
+		// ç„¡äº‹ã«æ›´æ–°ãŒçµ‚ã‚ã£ãŸã‚‰ æœ€çµ‚æ›´æ–°æ—¥æ™‚ ä¿å­˜
 		this.damtomo.getStatement().executeUpdate(
 			"REPLACE INTO LastUpdateDate VALUES(\n" +
 			"	'MarkingDx',\n" +
@@ -132,55 +133,55 @@ public class MarkingDx {
 			"	end\n" +
 			");"
 		);
-		
-		// •\¦—p‚É ÅIXV“ú æ“¾
+
+		// è¡¨ç¤ºç”¨ã« æœ€çµ‚æ›´æ–°æ—¥æ™‚ å–å¾—
 		rs = this.damtomo.getStatement().executeQuery(
-			"SELECT date FROM LastUpdateDate WHERE name == 'MarkingDx';" /* –{“–‚Í‚¿‚á‚ñ‚ÆƒtƒH[ƒ}ƒbƒg‚µ‚½‚Ù‚¤‚ª—Ç‚¢‚©‚à */
+			"SELECT date FROM LastUpdateDate WHERE name == 'MarkingDx';" /* æœ¬å½“ã¯ã¡ã‚ƒã‚“ã¨ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã—ãŸã»ã†ãŒè‰¯ã„ã‹ã‚‚ */
 		);
 		rs.next();
 		String date_new = rs.getString("date");
-		
+
 		// test
-		System.out.print("MarkingDx XV: ");
+		System.out.print("MarkingDx æ›´æ–°: ");
 		if (date_new.equals(date_old)) {
-			System.out.println("‚È‚µ");
+			System.out.println("ãªã—");
 		} else if ("0000-00-00 00:00:00".equals(date_old)) {
 			System.out.println(" - " + date_new);
 		} else {
 			System.out.println(date_old + " - " + date_new);
 		}
 		System.out.println();
-		
+
 	}
-	
-	// 
-	// 1 ‚Â‚ÌÌ“_î•ñ‚ğƒp[ƒX‚µ‚Ä ƒf[ƒ^ƒx[ƒX‚É’Ç‰Á
-	// 
-	// ƒf[ƒ^ƒx[ƒX‚É’Ç‰Á‚µ‚½ê‡‚Í true A
-	// “ú•t“I‚ÉXV‚ğI—¹‚·‚×‚«‚ÍAƒf[ƒ^‚ğ’Ç‰Á‚¹‚¸‚É false ‚ğ•Ô‚·
-	// 
+
+	//
+	// 1 ã¤ã®æ¡ç‚¹æƒ…å ±ã‚’ãƒ‘ãƒ¼ã‚¹ã—ã¦ ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã«è¿½åŠ 
+	//
+	// ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã«è¿½åŠ ã—ãŸå ´åˆã¯ true ã€
+	// æ—¥ä»˜çš„ã«æ›´æ–°ã‚’çµ‚äº†ã™ã¹ãæ™‚ã¯ã€ãƒ‡ãƒ¼ã‚¿ã‚’è¿½åŠ ã›ãšã« false ã‚’è¿”ã™
+	//
 	boolean parseElement(Element marking) throws SQLException {
-		
-		// Še’l‚ğƒp[ƒX
+
+		// å„å€¤ã‚’ãƒ‘ãƒ¼ã‚¹
 		String requestNo = marking.attr("requestNo");
 		String artist    = marking.attr("artist");
 		String contents  = marking.attr("contents");
-		
+
 		String play = marking.attr("play");
 		String reportCommentNo = marking.attr("reportCommentNo");
-		
+
 		String chartTotalPoint = marking.ownText();
 		String chartInterval        = marking.attr("chartInterval");
 		String chartStability       = marking.attr("chartStability");
 		String chartExpressiveness  = marking.attr("chartExpressiveness");
 		String chartVibrateLongtone = marking.attr("chartVibrateLongtone");
 		String chartRhythm          = marking.attr("chartRhythm");
-		
+
 		String highPitch = marking.attr("highPitch");
 		String lowPitch  = marking.attr("lowPitch");
 		String highTessitura = marking.attr("highTessitura");
 		String lowTessitura  = marking.attr("lowTessitura");
-		
+
 		String modulation            = marking.attr("modulation");
 		String measure               = marking.attr("measure");
 		String sob                   = marking.attr("sob");
@@ -190,23 +191,23 @@ public class MarkingDx {
 		String vibrato               = marking.attr("vibrato");
 		String vibratoType           = marking.attr("vibratoType");
 		String vibratoSumSeconds = marking.attr("vibratoSumSeconds");
-		
+
 		String averageTotalMilliPoint = marking.attr("averageTotalPoint");
 		String averagePitch           = marking.attr("averagePitch");
 		String averageStability       = marking.attr("averageStability");
 		String averageExpressiveness  = marking.attr("averageExpressiveness");
 		String averageVibrateLongtone = marking.attr("averageVibrateLongtone");
 		String averageRhythm          = marking.attr("averageRhythm");
-		
+
 		String lastMilliPoint = marking.attr("lastPoint");
-		
+
 		String date = marking.attr("date");
-		
-		// “ú•tƒ`ƒFƒbƒN
+
+		// æ—¥ä»˜ãƒã‚§ãƒƒã‚¯
 		ResultSet rs = this.damtomo.getStatement().executeQuery(
 			"SELECT\n" +
 			"	CASE\n" +
-			"		WHEN replace('" + date.replace("'", "''") + "', '/', '-') <= (SELECT date FROM LastUpdateDate WHERE name == 'MarkingDx') THEN\n" + /* –{“–‚Í‚¿‚á‚ñ‚ÆƒtƒH[ƒ}ƒbƒg‚µ‚½‚Ù‚¤‚ª—Ç‚¢‚©‚à */
+			"		WHEN replace('" + date.replace("'", "''") + "', '/', '-') <= (SELECT date FROM LastUpdateDate WHERE name == 'MarkingDx') THEN\n" + /* æœ¬å½“ã¯ã¡ã‚ƒã‚“ã¨ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã—ãŸã»ã†ãŒè‰¯ã„ã‹ã‚‚ */
 			"			1\n" +
 			"		ELSE\n" +
 			"			0\n" +
@@ -215,9 +216,9 @@ public class MarkingDx {
 		);
 		rs.next();
 		if (rs.getBoolean("exists")) return false;
-		
-		// ƒf[ƒ^ƒx[ƒX‚É’Ç‰Á
-		// ‘O‰ñ‚ÉXV’†‚É¸”s‚µ‚½‚È‚ÇAƒf[ƒ^‚ªd•¡‚·‚é‰Â”\«‚ª‚ ‚é‚Ì‚ÅA"INSERT OR IGNORE"
+
+		// ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã«è¿½åŠ 
+		// å‰å›ã«æ›´æ–°ä¸­ã«å¤±æ•—ã—ãŸæ™‚ãªã©ã€ãƒ‡ãƒ¼ã‚¿ãŒé‡è¤‡ã™ã‚‹å¯èƒ½æ€§ãŒã‚ã‚‹ã®ã§ã€"INSERT OR IGNORE"
 		this.damtomo.getStatement().executeUpdate(
 			"INSERT OR IGNORE INTO MarkingDx VALUES(\n" +
 			"	'" + requestNo.replace("'", "''") + "',\n" +
@@ -258,12 +259,12 @@ public class MarkingDx {
 			"	\n" +
 			"	'" + lastMilliPoint.replace("'", "''") + "',\n" +
 			"	\n" +
-			"	replace('" + date.replace("'", "''") + "', '/', '-')\n" + /* –{“–‚Í‚¿‚á‚ñ‚ÆƒtƒH[ƒ}ƒbƒg‚µ‚½‚Ù‚¤‚ª—Ç‚¢‚©‚à */
+			"	replace('" + date.replace("'", "''") + "', '/', '-')\n" + /* æœ¬å½“ã¯ã¡ã‚ƒã‚“ã¨ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã—ãŸã»ã†ãŒè‰¯ã„ã‹ã‚‚ */
 			");"
 		);
-		
+
 		return true;
-		
+
 	}
-	
+
 }

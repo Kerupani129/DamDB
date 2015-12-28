@@ -3,17 +3,17 @@ package net.kerupani129.damdb.util;
 import java.sql.*;
 
 // 
-// SqlUtils クラス
+// SqlUtils 繧ｯ繝ｩ繧ｹ
 // 
 public class SqlUtils {
 	
 	// 
-	// コンストラクタ
+	// 繧ｳ繝ｳ繧ｹ繝医Λ繧ｯ繧ｿ
 	// 
 	private SqlUtils() {}
 	
 	// 
-	// テーブル 存在チェック
+	// 繝�繝ｼ繝悶Ν 蟄伜惠繝√ぉ繝�繧ｯ
 	// 
 	public static boolean tableExists(Statement stmt, String name) throws SQLException {
 		

@@ -5,29 +5,29 @@ import java.sql.*;
 import java.net.*;
 
 // 
-// ƒƒCƒ“ƒNƒ‰ƒX
+// ãƒ¡ã‚¤ãƒ³ã‚¯ãƒ©ã‚¹
 // 
 public class Main {
 	
 	// 
-	// ƒƒCƒ“ƒƒ\ƒbƒh
+	// ãƒ¡ã‚¤ãƒ³ãƒ¡ã‚½ãƒƒãƒ‰
 	// 
 	public static void main(String[] args) {
 		
 		System.out.println(
 			"// " + Meta.name + " ver." + Meta.version + "\n" +
 			"// " + Meta.copyright + "\n" +
-			"// ‚±‚Ìƒ\ƒtƒgƒEƒFƒA‚ÍAApache 2.0 ƒ‰ƒCƒZƒ“ƒX ‚Å”z•z‚³‚ê‚Ä‚¢‚é»ì•¨‚ªŠÜ‚Ü‚ê‚Ä‚¢‚Ü‚·B\n"
+			"// ã“ã®ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢ã¯ã€Apache 2.0 ãƒ©ã‚¤ã‚»ãƒ³ã‚¹ ã§é…å¸ƒã•ã‚Œã¦ã„ã‚‹è£½ä½œç‰©ãŒå«ã¾ã‚Œã¦ã„ã¾ã™ã€‚\n"
 		);
 		
 		try {
 			
-			// ƒf[ƒ^ƒx[ƒX€”õ
+			// ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹æº–å‚™
 			Damtomo damtomo = new Damtomo();
 			
 			if (!damtomo.ready()) {
 				if (args.length == 0) {
-					System.out.println("ƒvƒƒtƒB[ƒ‹ URL ‚ğw’è‚µ‚Ä‚­‚¾‚³‚¢");
+					System.out.println("ãƒ—ãƒ­ãƒ•ã‚£ãƒ¼ãƒ« URL ã‚’æŒ‡å®šã—ã¦ãã ã•ã„");
 					damtomo.close();
 					return;
 				} else {
@@ -35,30 +35,30 @@ public class Main {
 				}
 			}
 			
-			// ƒvƒƒtƒB[ƒ‹î•ñ •\¦
-			System.out.println("¡Profile");
+			// ãƒ—ãƒ­ãƒ•ã‚£ãƒ¼ãƒ«æƒ…å ± è¡¨ç¤º
+			System.out.println("â– Profile");
 			System.out.println("damtomoId = " + damtomo.getDamtomoId());
 			System.out.println("cdmCardNo = " + damtomo.getCdmCardNo());
 			System.out.println("     name = " + damtomo.getName());
 			System.out.println();
 			
-			// ¸–§Ì“_DX ˆ—
+			// ç²¾å¯†æ¡ç‚¹DX å‡¦ç†
 			MarkingDx dx = damtomo.getMarkingDx();
 			dx.update();
 			
-			// ƒf[ƒ^ƒx[ƒXƒNƒ[ƒY
+			// ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã‚¯ãƒ­ãƒ¼ã‚º
 			damtomo.close();
 			
 		} catch (URISyntaxException e) {
-			throw new IllegalStateException("ƒGƒ‰[: URL ‚ªˆÙí‚Å‚·: ", e);
+			throw new IllegalStateException("ã‚¨ãƒ©ãƒ¼: URL ãŒç•°å¸¸ã§ã™: ", e);
 		} catch (IOException e) {
-			throw new IllegalStateException("ƒGƒ‰[: “üo—ÍƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½: ", e);
+			throw new IllegalStateException("ã‚¨ãƒ©ãƒ¼: å…¥å‡ºåŠ›ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¾ã—ãŸ: ", e);
 		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("ƒGƒ‰[: ƒf[ƒ^ƒx[ƒX‚ğ—˜—p‚Å‚«‚Ü‚¹‚ñ: ", e);
+			throw new IllegalStateException("ã‚¨ãƒ©ãƒ¼: ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã‚’åˆ©ç”¨ã§ãã¾ã›ã‚“: ", e);
 		} catch (SQLException e) {
-			throw new IllegalStateException("ƒGƒ‰[: ƒf[ƒ^ƒx[ƒX‚ÌƒAƒNƒZƒX‚É¸”s‚µ‚Ü‚µ‚½: ", e);
+			throw new IllegalStateException("ã‚¨ãƒ©ãƒ¼: ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã®ã‚¢ã‚¯ã‚»ã‚¹ã«å¤±æ•—ã—ã¾ã—ãŸ: ", e);
 		} catch (Exception e) {
-			throw new IllegalStateException("ƒGƒ‰[: —\Šú‚¹‚ÊƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½: ", e);
+			throw new IllegalStateException("ã‚¨ãƒ©ãƒ¼: äºˆæœŸã›ã¬ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¾ã—ãŸ: ", e);
 		}
 		
 	}

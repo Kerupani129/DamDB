@@ -5,23 +5,23 @@ import java.sql.*;
 import net.kerupani129.damdb.util.*;
 
 // 
-// FitVersion ƒNƒ‰ƒX
+// FitVersion ã‚¯ãƒ©ã‚¹
 // 
 public class FitVersion {
 	
 	// 
-	// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	// 
 	private FitVersion() {}
 	
 	// 
-	// ƒf[ƒ^ƒx[ƒX‚Ìƒo[ƒWƒ‡ƒ“‚ð‡‚í‚¹‚é
+	// ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã‚’åˆã‚ã›ã‚‹
 	// 
 	public static void fit(Damtomo damtomo) throws SQLException {
 		
 		String version;
 		
-		// ƒf[ƒ^ƒx[ƒX ƒƒ^î•ñ ƒ`ƒFƒbƒN
+		// ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ ãƒ¡ã‚¿æƒ…å ± ãƒã‚§ãƒƒã‚¯
 		if (SqlUtils.tableExists(damtomo.getStatement(), "Meta")) {
 			version = damtomo.getStatement().executeQuery(
 				"SELECT (SELECT value FROM Meta WHERE key == 'version') AS value;"
@@ -33,11 +33,11 @@ public class FitVersion {
 			version = "0.1";
 		}
 		
-		// ’iŠK“I‚Éƒo[ƒWƒ‡ƒ“ƒAƒbƒv
+		// æ®µéšŽçš„ã«ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã‚¢ãƒƒãƒ—
 		if (compareVersions("0.2", version) > 0) convert_0_1_to_0_2(damtomo);
 		if (compareVersions("0.3", version) > 0) convert_0_2_to_0_3(damtomo);
 		
-		// ƒf[ƒ^ƒx[ƒX ƒƒ^î•ñ ‘‚«Š·‚¦
+		// ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ ãƒ¡ã‚¿æƒ…å ± æ›¸ãæ›ãˆ
 		damtomo.getStatement().executeUpdate(
 			"REPLACE INTO Meta VALUES('version', '" + Meta.version.replace("'", "''") + "');"
 		);
@@ -52,7 +52,7 @@ public class FitVersion {
 	// 
 	static void convert_0_1_to_0_2(Damtomo damtomo) throws SQLException {
 		
-		// ƒf[ƒ^ƒx[ƒX ‚É•ÏX
+		// ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ ã«å¤‰æ›´
 		if (SqlUtils.tableExists(damtomo.getStatement(), "MarkingDx")) {
 			damtomo.getStatement().executeUpdate(
 				"UPDATE MarkingDx SET date = replace(date, '/', '-');"
@@ -60,7 +60,7 @@ public class FitVersion {
 		}
 		
 		// test
-		System.out.println("ƒf[ƒ^ƒx[ƒX ƒo[ƒWƒ‡ƒ“ ƒAƒbƒvƒf[ƒg: 0.1 -> 0.2");
+		System.out.println("ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ ãƒãƒ¼ã‚¸ãƒ§ãƒ³ ã‚¢ãƒƒãƒ—ãƒ‡ãƒ¼ãƒˆ: 0.1 -> 0.2");
 		
 	}
 	
@@ -69,7 +69,7 @@ public class FitVersion {
 	// 
 	static void convert_0_2_to_0_3(Damtomo damtomo) throws SQLException {
 		
-		// ƒf[ƒ^ƒx[ƒX ‚É•ÏX
+		// ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ ã«å¤‰æ›´
 		if (SqlUtils.tableExists(damtomo.getStatement(), "MarkingDx")) {
 			damtomo.getStatement().executeUpdate(
 				"CREATE TABLE IF NOT EXISTS Song(requestNo text primary key, artist text, contents text);\n" +
@@ -78,17 +78,17 @@ public class FitVersion {
 		}
 		
 		// test
-		System.out.println("ƒf[ƒ^ƒx[ƒX ƒo[ƒWƒ‡ƒ“ ƒAƒbƒvƒf[ƒg: 0.2 -> 0.3");
+		System.out.println("ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ ãƒãƒ¼ã‚¸ãƒ§ãƒ³ ã‚¢ãƒƒãƒ—ãƒ‡ãƒ¼ãƒˆ: 0.2 -> 0.3");
 		
 	}
 	
 	// 
-	// ƒo[ƒWƒ‡ƒ“•¶Žš—ñ (”Žš‚ÆƒsƒŠƒIƒh‚Ì‚Ý) ‚ð”äŠr‚·‚é
+	// ãƒãƒ¼ã‚¸ãƒ§ãƒ³æ–‡å­—åˆ— (æ•°å­—ã¨ãƒ”ãƒªã‚ªãƒ‰ã®ã¿) ã‚’æ¯”è¼ƒã™ã‚‹
 	// 
-	// v1 >  v2 ‚Ìê‡‚Í 1
-	// v1 == v2 ‚Ìê‡‚Í 0
-	// v1 <  v2 ‚Ìê‡‚Í -1
-	// ‚ð•Ô‚·
+	// v1 >  v2 ã®å ´åˆã¯ 1
+	// v1 == v2 ã®å ´åˆã¯ 0
+	// v1 <  v2 ã®å ´åˆã¯ -1
+	// ã‚’è¿”ã™
 	// 
 	static int compareVersions(String v1, String v2) {
 		

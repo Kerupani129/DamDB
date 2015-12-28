@@ -1,17 +1,17 @@
 package net.kerupani129.damdb;
 
 // 
-// Meta クラス
+// Meta 繧ｯ繝ｩ繧ｹ
 // 
 public class Meta {
 	
-	// 定数
+	// 螳壽焚
 	public static final String version = "0.3";
-	public static final String name = "精密採点DX 履歴管理ソフト DamDB";
+	public static final String name = "邊ｾ蟇�謗｡轤ｹDX 螻･豁ｴ邂｡逅�繧ｽ繝輔ヨ DamDB";
 	public static final String copyright = "Copyright (c) 2015 Kerupani129";
 	
 	// 
-	// コンストラクタ
+	// 繧ｳ繝ｳ繧ｹ繝医Λ繧ｯ繧ｿ
 	// 
 	private Meta() {}
 	

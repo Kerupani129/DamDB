@@ -1,97 +1,101 @@
 package net.kerupani129.damdb;
 
-import java.io.*;
-import java.util.*;
-import java.net.*;
-import java.sql.*;
-import java.nio.file.*;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Paths;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 
-import org.jsoup.*;
-import org.jsoup.nodes.*;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
-import net.kerupani129.damdb.util.*;
+import net.kerupani129.damdb.util.NetUtils;
+import net.kerupani129.damdb.util.SqlUtils;
 
-// 
-// Damtomo ƒNƒ‰ƒX
-// 
+//
+// Damtomo ã‚¯ãƒ©ã‚¹
+//
 public class Damtomo {
-	
-	// ’è”
-	/* ƒtƒ@ƒCƒ‹EƒfƒBƒŒƒNƒgƒŠ */
-	private static final String dbDir = "../db";
+
+	// å®šæ•°
+	/* ãƒ•ã‚¡ã‚¤ãƒ«ãƒ»ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª */
+	private static final String dbDir = "./db";
 	private static final String dbName = "dam";
-	/* ’ÊM */
+	/* é€šä¿¡ */
 	public static final int timeout = 10000;
-	
-	// •Ï”
-	/* ƒf[ƒ^ƒx[ƒX */
+
+	// å¤‰æ•°
+	/* ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ */
 	private java.sql.Connection con;
 	private Statement stmt;
-	/* ƒ†[ƒU[î•ñ */
+	/* ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ± */
 	private String damtomoId;
 	private String cdmCardNo;
 	private String name;
-	/* Ì“_î•ñ */
+	/* æ¡ç‚¹æƒ…å ± */
 	private final MarkingDx markingDx;
-	
-	// 
-	// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-	// 
+
+	//
+	// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	//
 	public Damtomo() throws ClassNotFoundException, SQLException {
-		
-		// ƒfƒBƒŒƒNƒgƒŠ‚ª‚È‚¯‚ê‚Îì¬
-		File dir = new File(this.dbDir);
+
+		// ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãŒãªã‘ã‚Œã°ä½œæˆ
+		File dir = new File(Damtomo.dbDir);
 		if (!dir.exists()) dir.mkdir();
-		
-		// ƒf[ƒ^ƒx[ƒX ‚ÉÚ‘±
+
+		// ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ ã«æ¥ç¶š
 		Class.forName("org.sqlite.JDBC");
-		this.con = DriverManager.getConnection("jdbc:sqlite:" + Paths.get(this.dbDir, this.dbName + ".db"));
+		this.con = DriverManager.getConnection("jdbc:sqlite:" + Paths.get(Damtomo.dbDir, Damtomo.dbName + ".db"));
 		this.stmt = this.con.createStatement();
-		
-		// ƒf[ƒ^ƒx[ƒX ‚©‚ç ƒ†[ƒU[î•ñ ‚ğæ“¾
+
+		// ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ ã‹ã‚‰ ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ± ã‚’å–å¾—
 		this.getProfile();
-		
-		// ƒf[ƒ^ƒx[ƒX ‚Ìƒo[ƒWƒ‡ƒ“ƒ`ƒFƒbƒNEC³
+
+		// ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ ã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³ãƒã‚§ãƒƒã‚¯ãƒ»ä¿®æ­£
 		if (this.ready()) {
 			this.fitVersion();
 		}
-		
-		// Ì“_î•ñ—p‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‰Šú‰»
+
+		// æ¡ç‚¹æƒ…å ±ç”¨ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹åˆæœŸåŒ–
 		this.markingDx = new MarkingDx(this);
-		
+
 	}
-	
-	// 
-	// ƒvƒƒtƒB[ƒ‹ƒy[ƒW url ‚©‚ç ƒ†[ƒU[î•ñ ‚ğæ“¾‚µ 
-	// ƒf[ƒ^ƒx[ƒX ‚É ƒ†[ƒU[î•ñ ‘‚«‚İ
-	// 
+
+	//
+	// ãƒ—ãƒ­ãƒ•ã‚£ãƒ¼ãƒ«ãƒšãƒ¼ã‚¸ url ã‹ã‚‰ ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ± ã‚’å–å¾—ã—
+	// ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ ã« ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ± æ›¸ãè¾¼ã¿
+	//
 	public void setProfile(String url) throws IOException, URISyntaxException, SQLException {
-		
-		// ƒvƒtƒB[ƒ‹ƒy[ƒW  ‚©‚çî•ñæ“¾
-		Document doc = Jsoup.connect(url).timeout(this.timeout).get();
-		this.damtomoId = NetUtils.getQueryMap(new URL(url).getQuery()).get("damtomoId"); // ˆÃ†‰»‚³‚ê‚½ damtomoId
-		this.cdmCardNo = doc.getElementById("cdmCardNo").attr("value"); // ˆÃ†‰»‚³‚ê‚½ cdmCardNo
-		this.name = doc.select("div.name > p > span").first().ownText(); // •\¦–¼
-		
-		// ƒf[ƒ^ƒx[ƒX ‚É ƒ†[ƒU[î•ñ •Û‘¶
+
+		// ãƒ—ãƒ•ã‚£ãƒ¼ãƒ«ãƒšãƒ¼ã‚¸  ã‹ã‚‰æƒ…å ±å–å¾—
+		Document doc = Jsoup.connect(url).timeout(Damtomo.timeout).get();
+		this.damtomoId = NetUtils.getQueryMap(new URL(url).getQuery()).get("damtomoId"); // æš—å·åŒ–ã•ã‚ŒãŸ damtomoId
+		this.cdmCardNo = doc.getElementById("cdmCardNo").attr("value"); // æš—å·åŒ–ã•ã‚ŒãŸ cdmCardNo
+		this.name = doc.select("div.name > p > span").first().ownText(); // è¡¨ç¤ºå
+
+		// ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ ã« ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ± ä¿å­˜
 		this.stmt.executeUpdate(
 			"CREATE TABLE IF NOT EXISTS Profile(key text primary key, value);\n" +
 			"REPLACE INTO Profile VALUES('damtomoId', '" + this.damtomoId.replace("'", "''") + "');\n" +
 			"REPLACE INTO Profile VALUES('cdmCardNo', '" + this.cdmCardNo.replace("'", "''") + "');\n" +
 			"REPLACE INTO Profile VALUES('name', '" + this.name.replace("'", "''") + "');"
 		);
-		
+
 	}
-	
-	// 
-	// ƒf[ƒ^ƒx[ƒX ‚©‚ç ƒ†[ƒU[î•ñ æ“¾
-	// 
+
+	//
+	// ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ ã‹ã‚‰ ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ± å–å¾—
+	//
 	private void getProfile() throws SQLException {
-		
-		// ƒe[ƒuƒ‹ ‘¶İƒ`ƒFƒbƒN
+
+		// ãƒ†ãƒ¼ãƒ–ãƒ« å­˜åœ¨ãƒã‚§ãƒƒã‚¯
 		if (!SqlUtils.tableExists(this.stmt, "Profile")) return;
-		
-		// ƒf[ƒ^ƒx[ƒX ‚©‚ç ƒ†[ƒU[î•ñ æ“¾
+
+		// ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ ã‹ã‚‰ ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ± å–å¾—
 		this.damtomoId = this.stmt.executeQuery(
 			"SELECT (SELECT value FROM Profile WHERE key == 'damtomoId') AS value;"
 		).getString("value");
@@ -101,98 +105,98 @@ public class Damtomo {
 		this.name = this.stmt.executeQuery(
 			"SELECT (SELECT value FROM Profile WHERE key == 'name') AS value;"
 		).getString("value");
-		
+
 	}
-	
-	// 
-	// ƒo[ƒWƒ‡ƒ“î•ñ‚ğŠm”F‚µA•K—v‚ª‚ ‚ê‚Î•ÏŠ·‚·‚é
-	// 
+
+	//
+	// ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ã‚’ç¢ºèªã—ã€å¿…è¦ãŒã‚ã‚Œã°å¤‰æ›ã™ã‚‹
+	//
 	public void fitVersion() throws SQLException {
-		
-		// ƒo[ƒWƒ‡ƒ“•ÏŠ·
+
+		// ãƒãƒ¼ã‚¸ãƒ§ãƒ³å¤‰æ›
 		FitVersion.fit(this);
-		
+
 	}
-	
-	
-	// 
-	// ƒf[ƒ^ƒx[ƒX ƒNƒ[ƒY
-	// 
-	// –{“–‚ÍAfinalize() ƒI[ƒo[ƒ‰ƒCƒh‚µ‚ÄŒÄ‚Ño‚µ‚½‚èA
-	// ƒNƒ[ƒY‚³‚ê‚Ä‚¢‚é‚©‚Ç‚¤‚©ƒtƒ‰ƒO‚ÅŠÇ—‚µ‚½•û‚ª‚¢‚¢‚Ì‚©‚µ‚ç
-	// 
+
+
+	//
+	// ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ ã‚¯ãƒ­ãƒ¼ã‚º
+	//
+	// æœ¬å½“ã¯ã€finalize() ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã—ã¦å‘¼ã³å‡ºã—ãŸã‚Šã€
+	// ã‚¯ãƒ­ãƒ¼ã‚ºã•ã‚Œã¦ã„ã‚‹ã‹ã©ã†ã‹ãƒ•ãƒ©ã‚°ã§ç®¡ç†ã—ãŸæ–¹ãŒã„ã„ã®ã‹ã—ã‚‰
+	//
 	public void close() throws SQLException {
-		
-		// ƒf[ƒ^ƒx[ƒX ƒNƒ[ƒY
+
+		// ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ ã‚¯ãƒ­ãƒ¼ã‚º
 		this.stmt.close();
 		this.con.close();
-		
+
 	}
-	
-	// 
-	// ‚±‚ÌƒIƒuƒWƒFƒNƒg‚ªg—p‰Â”\‚©’²‚×‚é
-	// 
+
+	//
+	// ã“ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒä½¿ç”¨å¯èƒ½ã‹èª¿ã¹ã‚‹
+	//
 	public boolean ready() throws SQLException {
-		
+
 		if (this.stmt.isClosed() || this.con.isClosed()) return false;
-		
+
 		if (this.damtomoId == null || this.cdmCardNo == null || this.name == null) return false;
-		
+
 		return true;
-		
+
 	}
-	
-	// 
-	// Statement ‚ğæ“¾‚·‚é
-	// 
+
+	//
+	// Statement ã‚’å–å¾—ã™ã‚‹
+	//
 	Statement getStatement() {
 		return this.stmt;
 	}
-	
-	// 
-	// damtomoId ‚ğæ“¾‚·‚é
-	// 
+
+	//
+	// damtomoId ã‚’å–å¾—ã™ã‚‹
+	//
 	public String getDamtomoId() {
 		return this.damtomoId;
 	}
-	
-	// 
-	// cdmCardNo ‚ğæ“¾‚·‚é
-	// 
+
+	//
+	// cdmCardNo ã‚’å–å¾—ã™ã‚‹
+	//
 	public String getCdmCardNo() {
 		return this.cdmCardNo;
 	}
-	
-	// 
-	// name ‚ğæ“¾‚·‚é
-	// 
+
+	//
+	// name ã‚’å–å¾—ã™ã‚‹
+	//
 	public String getName() {
 		return this.name;
 	}
-	
-	// 
-	// name ‚ğİ’è‚·‚é
-	// 
-	// ˆø”‚ª null ‚Ì‚Í‰½‚à‚µ‚È‚¢
-	// 
+
+	//
+	// name ã‚’è¨­å®šã™ã‚‹
+	//
+	// å¼•æ•°ãŒ null ã®æ™‚ã¯ä½•ã‚‚ã—ãªã„
+	//
 	public void setName(String name) throws SQLException {
-		
+
 		if (name == null) return;
-		
+
 		this.stmt.executeUpdate(
 			"CREATE TABLE IF NOT EXISTS Profile(key text primary key, value);\n" +
 			"REPLACE INTO Profile VALUES('name', '" + name.replace("'", "''") + "');"
 		);
-		
+
 		this.name = name;
-		
+
 	}
-	
-	// 
-	// MarkingDx ƒIƒuƒWƒFƒNƒg æ“¾
-	// 
+
+	//
+	// MarkingDx ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ å–å¾—
+	//
 	public MarkingDx getMarkingDx() {
 		return markingDx;
 	}
-	
+
 }
